@@ -15,14 +15,15 @@ import com.example.springshop2.services.ProductService;
 import com.example.springshop2.token.JWTTokenHelper;
 import com.example.springshop2.util.PersonValidator;
 import com.example.springshop2.util.ProductValidator;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
@@ -130,56 +131,56 @@ public class AdministratorController {
     /* ********************************************************** */
 // -----------?
     @PostMapping(value = "/product/add")
-    public FieldErrorResponse productAdd(
-            @RequestParam("selectedFile") Optional<MultipartFile> file,
-            @Valid @RequestPart("product") String productString,
-            BindingResult bindingResult) throws JSONException, IOException {
-
-        JSONObject jsonProduct= new JSONObject(productString);
-
-        String title = (String) jsonProduct.get("title");
-        String seller = (String) jsonProduct.get("seller");
-        String priceString = (String) jsonProduct.get("price");
-        Double price = Double.valueOf(priceString);
-        String category = (String) jsonProduct.get("category");
-        String description = (String) jsonProduct.get("description");
-
-        Product product = new Product(title,seller,price,category,description);
-
-        // валидация полей
-        productValidator.validate(product, bindingResult);
-        List<CustomFieldError> fieldErrors = new ArrayList<>();
-        FieldErrorResponse fieldErrorResponse = new FieldErrorResponse();
-
-        // если есть ошибки - вывод сообщений
-        if (bindingResult.hasErrors()) {
-            System.out.println("Error");
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            for (FieldError error : errors ) {
-                CustomFieldError fieldError = new CustomFieldError();
-                fieldError.setField(error.getField());
-                fieldError.setMessage(error.getDefaultMessage());
-                System.out.println("field: " + error.getField()
-                        + "; message: " + error.getDefaultMessage());
-                fieldErrors.add(fieldError);
-            }
-            fieldErrorResponse.setFieldErrors(fieldErrors);
-            return fieldErrorResponse;
-        }
-
-        System.out.println("Ok");
-
-        if (file.isPresent()) {
-            String idFile = fileService.save(file.get());
-            Optional<FileEntity> savedImg = fileService.getFile(idFile);
-            if (savedImg.isPresent()) {
-                product.setImageId(idFile);
-            }
-        }
-        productService.saveProduct(product);
-
-        return fieldErrorResponse;
-    }
+//    public FieldErrorResponse productAdd(
+//            @RequestParam("selectedFile") Optional<MultipartFile> file,
+//            @Valid @RequestPart("product") String productString,
+//            BindingResult bindingResult) throws JSONException, IOException {
+//
+//        JSONObject jsonProduct= new JSONObject(productString);
+//
+//        String title = (String) jsonProduct.get("title");
+//        String seller = (String) jsonProduct.get("seller");
+//        String priceString = (String) jsonProduct.get("price");
+//        Double price = Double.valueOf(priceString);
+//        String category = (String) jsonProduct.get("category");
+//        String description = (String) jsonProduct.get("description");
+//
+//        Product product = new Product(title,seller,price,category,description);
+//
+//        // валидация полей
+//        productValidator.validate(product, bindingResult);
+//        List<CustomFieldError> fieldErrors = new ArrayList<>();
+//        FieldErrorResponse fieldErrorResponse = new FieldErrorResponse();
+//
+//        // если есть ошибки - вывод сообщений
+//        if (bindingResult.hasErrors()) {
+//            System.out.println("Error");
+//            List<FieldError> errors = bindingResult.getFieldErrors();
+//            for (FieldError error : errors ) {
+//                CustomFieldError fieldError = new CustomFieldError();
+//                fieldError.setField(error.getField());
+//                fieldError.setMessage(error.getDefaultMessage());
+//                System.out.println("field: " + error.getField()
+//                        + "; message: " + error.getDefaultMessage());
+//                fieldErrors.add(fieldError);
+//            }
+//            fieldErrorResponse.setFieldErrors(fieldErrors);
+//            return fieldErrorResponse;
+//        }
+//
+//        System.out.println("Ok");
+//
+//        if (file.isPresent()) {
+//            String idFile = fileService.save(file.get());
+//            Optional<FileEntity> savedImg = fileService.getFile(idFile);
+//            if (savedImg.isPresent()) {
+//                product.setImageId(idFile);
+//            }
+//        }
+//        productService.saveProduct(product);
+//
+//        return fieldErrorResponse;
+//    }
 
     //+++++++++++++++
     /* Удаление продукта */
